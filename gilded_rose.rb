@@ -51,18 +51,21 @@ class GildedRose
       end
     end
   end
-end
 
-class Item
-  attr_accessor :name, :sell_in, :quality
+  # Seperate methods for each update style
+  def update_aged_brie(item)
 
-  def initialize(name, sell_in, quality)
-    @name = name
-    @sell_in = sell_in
-    @quality = quality
   end
 
-  def to_s()
-    "#{@name}, #{@sell_in}, #{@quality}"
+  def update_sulfuras(item)
+
+  end
+
+  def update_backstage_passes(item)
+
+  end
+
+  def update_default_item(item)
+
   end
 end
