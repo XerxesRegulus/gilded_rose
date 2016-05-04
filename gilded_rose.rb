@@ -18,14 +18,13 @@ class GildedRose
       else
         update_default_item(item)
       end
+      subtract_sell_in(item) unless item.name == "Sulfuras, Hand of Ragnaros"
     end
   end
 
   # Seperate methods for each update style
   def update_aged_brie(item)
-    item.quality = item.quality + 1 if item.quality < 50 && item.sell_in > 0
-    item.quality = item.quality + 2 if item.quality > 0 && item.sell_in == 0
-    item.sell_in = item.sell_in - 1 if item.sell_in > 0
+    add_quality(item, 1)
   end
 
   def update_sulfuras(item)
@@ -33,23 +32,41 @@ class GildedRose
   end
 
   def update_backstage_passes(item)
-    item.quality = item.quality + 1 if item.sell_in > 10
-    item.quality = item.quality + 2 if item.sell_in > 5 and item.sell_in <= 10
-    item.quality = item.quality + 3 if item.sell_in > 0 and item.sell_in <= 5
-    item.quality = 50 if item.quality > 50
-    item.quality = 0 if item.sell_in == 0
+    # We divided by zero! MUAHAHAHAHA! say goodbye to the universe!
+    inf = 1.0 / 0.0
+    case item.sell_in
+    when (11..inf)
+      add_quality(item, 1)
+    when (6..10)
+      add_quality(item, 2)
+    when (1..5)
+      add_quality(item, 3)
+    else
+      item.quality = 0
+    end
   end
 
   def update_conjured_item(item)
-    item.quality = item.quality - 2 if item.quality > 0 && item.sell_in > 0
-    item.quality = item.quality - 4 if item.quality > 0 && item.sell_in == 0
-    item.sell_in = item.sell_in - 1 if item.sell_in > 0
+    subtract_quality(item, 2)
   end
 
   def update_default_item(item)
-    item.quality = item.quality - 1 if item.quality > 0 && item.sell_in > 0
-    item.quality = item.quality - 2 if item.quality > 0 && item.sell_in == 0
-    item.sell_in = item.sell_in - 1 if item.sell_in > 0
+    subtract_quality(item, 1)
   end
 
+  def add_quality(item, amount)
+    amount *= 2 if item.sell_in <= 0
+    item.quality += amount if item.quality < 50
+    item.quality = 50 if item.quality > 50
+  end
+
+  def subtract_quality(item, amount)
+    amount *= 2 if item.sell_in <= 0
+    item.quality -= amount if item.quality > 0
+    item.quality = 0 if item.quality < 0
+  end
+
+  def subtract_sell_in(item)
+    item.sell_in -= 1 if item.sell_in > 0
+  end
 end
