@@ -29,11 +29,15 @@ class GildedRose
   end
 
   def update_sulfuras(item)
-
+    item.quality = 80
   end
 
   def update_backstage_passes(item)
-
+    item.quality = item.quality + 1 if item.sell_in > 10
+    item.quality = item.quality + 2 if item.sell_in > 5 and item.sell_in <= 10
+    item.quality = item.quality + 3 if item.sell_in > 0 and item.sell_in <= 5
+    item.quality = 50 if item.quality > 50
+    item.quality = 0 if item.sell_in == 0
   end
 
   def update_conjured_item(item)
