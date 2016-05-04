@@ -53,43 +53,40 @@ describe GildedRose do
     end
 
     context "Backstage Passes" do
+      let(:greater_10) { Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 10) }
+      let(:six_to_ten) { Item.new("Backstage passes to a TAFKAL80ETC concert", 7, 10) }
+      let(:one_to_five) { Item.new("Backstage passes to a TAFKAL80ETC concert", 5, 10) }
+      let(:late) { Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10) }
+      let(:quality_pass) { Item.new("Backstage passes to a TAFKAL80ETC concert", 5, 50) }
+      let(:low_quality_pass) { Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 0) }
+
+      let(:gilded_rose) { GildedRose.new([greater_10, six_to_ten, one_to_five, late, low_quality_pass, quality_pass]) }
+
       it "increases quality by one if sell_in is greater than 10" do
-        backstage_passes = Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 10)
-        gilded_rose = GildedRose.new([backstage_passes])
-        expect{gilded_rose.update_quality}.to change{backstage_passes.quality}.from(10).to(11)
+        expect{gilded_rose.update_quality}.to change{greater_10.quality}.from(10).to(11)
       end
 
       it "increases quality by two if the sell_in is less than 10" do
-        backstage_passes = Item.new("Backstage passes to a TAFKAL80ETC concert", 7, 10)
-        gilded_rose = GildedRose.new([backstage_passes])
-        expect{gilded_rose.update_quality}.to change{backstage_passes.quality}.from(10).to(12)
+        expect{gilded_rose.update_quality}.to change{six_to_ten.quality}.from(10).to(12)
       end
 
       it "increases quality by 3 if the sell_in is less than 5" do
-        backstage_passes = Item.new("Backstage passes to a TAFKAL80ETC concert", 5, 10)
-        gilded_rose = GildedRose.new([backstage_passes])
-        expect{gilded_rose.update_quality}.to change{backstage_passes.quality}.from(10).to(13)
+        expect{gilded_rose.update_quality}.to change{one_to_five.quality}.from(10).to(13)
       end
 
       it "drops the quality to 0 if the sell_in is zero" do
-        backstage_passes = Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10)
-        gilded_rose = GildedRose.new([backstage_passes])
         gilded_rose.update_quality
-        expect(backstage_passes.quality).to eq(0)
+        expect(late.quality).to eq(0)
       end
 
       it "reduces the quality but not less than zero" do
-        backstage_passes = Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 0)
-        gilded_rose = GildedRose.new([backstage_passes])
         gilded_rose.update_quality()
-        expect(backstage_passes.quality).to eq(0)
+        expect(low_quality_pass.quality).to eq(0)
       end
 
       it "does not exceed a quality of 50" do
-        backstage_passes = Item.new("Backstage passes to a TAFKAL80ETC concert", 5, 50)
-        gilded_rose = GildedRose.new([backstage_passes])
         gilded_rose.update_quality()
-        expect(backstage_passes.quality).to eq(50)
+        expect(quality_pass.quality).to eq(50)
       end
     end
 
@@ -104,8 +101,9 @@ describe GildedRose do
         gilded_rose.update_quality()
       end
 
-      it "degrades in quality as fast as normal items" do
+      it "degrades in quality as twice fast as normal items" do
         expect(conjured.quality).to eq(18)
+        expect(old_conjured.quality).to eq(16)
       end
 
       it "reduces the sell_in value" do
@@ -136,6 +134,10 @@ describe GildedRose do
         expect(default_item.quality).to eq(19)
       end
 
+      it "should degrade twice as fast if sell_in has passed" do
+        expect(old_default_item.quality).to eq(18)
+      end
+
       it "reduces in sell_in value" do
         expect(default_item.sell_in).to eq(9)
       end
@@ -146,10 +148,6 @@ describe GildedRose do
 
       it "reduces the sell_in but not less than zero" do
         expect(old_default_item.sell_in).to eq(0)
-      end
-
-      it "should degrade twice as fast if sell_in has passed" do
-        expect(old_default_item.quality).to eq(18)
       end
 
     end
