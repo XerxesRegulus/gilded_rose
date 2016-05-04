@@ -16,7 +16,7 @@ describe GildedRose do
       end
 
       it "does not change its sell_in value" do
-        expect(sulfuras.sell_in).to not_change(sulfuras.sell_in)
+        expect(sulfuras.sell_in).to eq(sulfuras.sell_in)
       end
     end
 
